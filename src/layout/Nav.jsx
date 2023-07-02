@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { BsX } from "react-icons/bs";
 import { FaBars } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { useMediaQuery } from "@uidotdev/usehooks";
 
 const Nav = ({ active, isActive }) => {
   const links = [
@@ -27,6 +28,9 @@ const Nav = ({ active, isActive }) => {
     updatedMouseInside[index] = false;
     setMouseInside(updatedMouseInside);
   };
+
+  const isSmallDevice = useMediaQuery("only screen and (max-width : 590px)");
+  const isMediumDevice = useMediaQuery("only screen and (max-width : 820px)");
 
   return (
     <>
@@ -76,43 +80,64 @@ const Nav = ({ active, isActive }) => {
 
         <div
           onClick={() => isActive(true)}
-          className="lg:hidden bg-black rounded-full w-10 h-10 flex justify-center items-center cursor-pointer"
+          className="lg:hidden bg-[#3C2837] rounded-full w-10 h-10 flex justify-center items-center cursor-pointer"
         >
           <FaBars />
         </div>
 
-        {active && (
-          <>
-            <div className="lg:hidden w-full h-full absolute top-0 left-0 overflow-hidden">
-              <motion.div
-                animate={{ width: "135vw", height: "140vh" }}
-                initial={{ width: "135vw", height: "120vh" }}
-                transition={{ ease: "easeInOut", duration: 0.5 }}
-                className="absolute -top-[8rem]  -left-[5rem] bg-[#3C2837]  rounded-bl-[40rem]  z-30 "
-              ></motion.div>
-            </div>
-            <motion.div className="lg:hidden  absolute top-0 right-0 flex flex-col items-center justify-center w-full h-full z-40 gap-8 text-xl font-bold">
-              <NavLink onClick={() => isActive(false)} to={"/work"}>
-                Work
-              </NavLink>
-              <NavLink onClick={() => isActive(false)} to={"/solutions"}>
-                Solutions
-              </NavLink>
-              <NavLink onClick={() => isActive(false)} to={"/services"}>
-                Services
-              </NavLink>
-              <NavLink onClick={() => isActive(false)} to={"/aboutus"}>
-                About Us
-              </NavLink>
-              <div
-                onClick={() => isActive(false)}
-                className="absolute top-10 right-10 cursor-pointer"
-              >
-                <BsX />
+        <AnimatePresence>
+          {active && (
+            <>
+              <div className="lg:hidden w-full h-full absolute top-0 left-0 overflow-hidden ">
+                <motion.div
+                  exit={
+                    isSmallDevice
+                      ? { width: "0", height: "0", top: "40px", right: "40px" }
+                      : isMediumDevice
+                      ? { width: "0", height: "0", top: "40px", right: "70px" }
+                      : { width: "0", height: "0", top: "40px", right: "70px" }
+                  }
+                  initial={{ width: "2.5rem", height: "2.5rem" }}
+                  animate={
+                    isSmallDevice
+                      ? { scale: 35 }
+                      : isMediumDevice
+                      ? { scale: 40 }
+                      : { scale: 50 }
+                  }
+                  // exit={!active && { width: "2.5rem", height: "2.5rem" }}
+                  transition={{ ease: "easeInOut", duration: 0.5 }}
+                  className={`absolute   bg-[#3C2837] top-5 right-5 rounded-full z-30 
+                  `}
+                ></motion.div>
               </div>
-            </motion.div>
-          </>
-        )}
+              <motion.div
+                exit={{ opacity: 0 }}
+                className="lg:hidden  absolute top-0 right-0 flex flex-col items-center justify-center w-full h-full z-40 gap-8 text-xl font-bold"
+              >
+                <NavLink onClick={() => isActive(false)} to={"/work"}>
+                  Work
+                </NavLink>
+                <NavLink onClick={() => isActive(false)} to={"/solutions"}>
+                  Solutions
+                </NavLink>
+                <NavLink onClick={() => isActive(false)} to={"/services"}>
+                  Services
+                </NavLink>
+                <NavLink onClick={() => isActive(false)} to={"/aboutus"}>
+                  About Us
+                </NavLink>
+                <motion.div
+                  exit={{ opacity: 0 }}
+                  onClick={() => isActive(false)}
+                  className="absolute top-[1.9rem] right-[1.9rem] cursor-pointer"
+                >
+                  <BsX />
+                </motion.div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
       </div>
     </>
   );
